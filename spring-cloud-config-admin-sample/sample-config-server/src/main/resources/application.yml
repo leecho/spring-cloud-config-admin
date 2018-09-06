@@ -1,0 +1,27 @@
+spring:
+  cloud:
+    config:
+      server:
+        jdbc:
+          sql: SELECT PROPERTY, VALUE from SCCA_ITEM where APPLICATION=? and PROFILE=? and LABEL=?
+  profiles:
+     active: jdbc
+  application:
+    name: config
+  datasource:
+    url: jdbc:mysql://localhost:3306/scca?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false
+    username: root
+    password: 3571571
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+  jpa:
+    database: mysql
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8081/eureka/
+server:
+  port: 8082

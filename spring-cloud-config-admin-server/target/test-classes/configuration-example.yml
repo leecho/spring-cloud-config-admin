@@ -1,0 +1,84 @@
+logging:
+  path: ../logs
+
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 10000
+security:
+  oauth2:
+    resource:
+      user-info-uri: http://api-gateway/uaa/current
+      id: ${spring.application.name:}
+    client:
+      clientId: server
+      clientSecret: server
+      accessTokenUri: http://api-gateway/uaa/oauth/token
+      grant-type: client_credentials
+      scope: server
+spring:
+  rabbitmq:
+    host: cola-rabbitmq
+    port: 5672
+    username: ${RABBITMQ_SERVER_USERNAME}
+    password: ${RABBITMQ_SERVER_PASSWORD}
+  sleuth:
+    sampler:
+      percentage: 1
+  datasource:
+    url: jdbc:mysql://cola-mysql:3306/cola-cloud?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull
+    username: ${MYSQL_SERVER_USERNAME}
+    password: ${MYSQL_SERVER_PASSWORD}
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    db-name: cola-cloud
+  redis:
+    host: cola-redis
+    port: 6379
+    username: ${REDIS_SERVER_USERNAME:}
+    password: ${REDIS_SERVER_PASSWORD:}
+    database: 8
+    timeout: 0M
+    pool:
+      max-active: 100
+      max-wait: 1
+      max-idle: 50
+      min-idle: 0
+
+cola:
+  swagger2:
+    enable: true
+    base-package: com.honvay.cola
+    title : Cola-Cloud
+    description: Cola cloud Restful API docs
+    termsOfServiceUrl : http://localhost:4000
+    version: 1.0
+    apiName: Authorization
+    apiKeyName: Authorization
+
+#mybatis配置
+mybatis-plus:
+  global-config:
+    id-type: 0  #0:数据库ID自增   1:用户输入id  2:全局唯一id(IdWorker)  3:全局唯一ID(uuid)
+    db-column-underline: false
+    refresh-mapper: true
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: true #配置的缓存的全局开关
+    lazyLoadingEnabled: true #延时加载的开关
+    multipleResultSetsEnabled: true #开启的话，延时加载一个属性时会加载该对象全部属性，否则按需加载属性
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #打印sql语句,调试用
+
+management:
+  security:
+    enabled: false
+
+eureka:
+  instance:
+    health-check-url-path: /health
+    status-page-url-path: /info
+    metadata-map:
+      management.context-path: ${server.context-path:}
