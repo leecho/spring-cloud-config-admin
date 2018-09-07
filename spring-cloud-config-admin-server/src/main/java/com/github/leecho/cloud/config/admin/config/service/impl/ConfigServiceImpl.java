@@ -1,8 +1,6 @@
 package com.github.leecho.cloud.config.admin.config.service.impl;
 
-import com.github.leecho.cloud.config.admin.config.entity.Change;
-import com.github.leecho.cloud.config.admin.config.entity.Config;
-import com.github.leecho.cloud.config.admin.config.entity.Push;
+import com.github.leecho.cloud.config.admin.config.entity.*;
 import com.github.leecho.cloud.config.admin.config.event.ConfigPublishEvent;
 import com.github.leecho.cloud.config.admin.config.event.ConfigPushEvent;
 import com.github.leecho.cloud.config.admin.config.manager.DraftManager;
@@ -11,6 +9,8 @@ import com.github.leecho.cloud.config.admin.config.manager.PushManager;
 import com.github.leecho.cloud.config.admin.config.model.*;
 import com.github.leecho.cloud.config.admin.config.repository.ChangeRepository;
 import com.github.leecho.cloud.config.admin.config.repository.ConfigRepository;
+import com.github.leecho.cloud.config.admin.config.repository.DraftRepository;
+import com.github.leecho.cloud.config.admin.config.repository.PushRepository;
 import com.github.leecho.cloud.config.admin.config.service.ConfigService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,8 +37,15 @@ public class ConfigServiceImpl implements ConfigService, ApplicationEventPublish
 
 	@Autowired
 	private ConfigRepository configRepository;
+
 	@Autowired
 	private ChangeRepository changeRepository;
+
+	@Autowired
+	private DraftRepository draftRepository;
+
+	@Autowired
+	private PushRepository pushRepository;
 
 	@Autowired
 	private DraftManager draftManager;
@@ -66,38 +74,47 @@ public class ConfigServiceImpl implements ConfigService, ApplicationEventPublish
 		return this.configRepository.save(config);
 	}
 
+
 	@Override
-	public void commit(Change change) {
-		this.draftManager.commit(change);
+	public List<Config> findByProfile(Integer profileId) {
+		return this.configRepository.findByProfile_Id(profileId);
+	}
+
+
+	@Override
+	public Draft commit(Change change) {
+		return this.draftManager.commit(change);
 	}
 
 	@Override
-	public void commit(CommitOperation commitOperation) {
-		this.draftManager.commit(commitOperation);
+	public List<Draft> commit(CommitOperation commitOperation) {
+		return this.draftManager.commit(commitOperation);
 	}
 
 	@Override
-	public void discard(Integer id) {
-		this.draftManager.discard(id);
+	public List<Draft> discard(Integer id) {
+		return this.draftManager.discard(id);
 	}
 
 	@Override
-	public void revert(Integer configId, String property) {
-		this.draftManager.revert(configId, property);
+	public Draft revert(Integer configId, String property) {
+		return this.draftManager.revert(configId, property);
 	}
 
 	@Override
-	public void publish(PublishOperation publishOperation) {
+	public Publish publish(PublishOperation publishOperation) {
 
-		this.publishManager.publish(publishOperation);
+		Publish publish = this.publishManager.publish(publishOperation);
 
 		//更改配置文件状态为无修改
 		this.applicationEventPublisher.publishEvent(new ConfigPublishEvent(publishOperation));
 
+		return publish;
 	}
 
 	@Override
-	public void push(PushOperation pushOperation) {
+	public List<Push> push(PushOperation pushOperation) {
+		List<Push> pushes = new ArrayList<>();
 		Config config = this.configRepository.findById(pushOperation.getConfigId()).orElseThrow(() ->
 				new IllegalArgumentException("Special config dose not exists"));
 
@@ -107,8 +124,10 @@ public class ConfigServiceImpl implements ConfigService, ApplicationEventPublish
 
 		pushOperation.getDestinations().forEach(destination -> {
 			Push result = pushManager.push(config, destination);
+			pushes.add(result);
 			this.applicationEventPublisher.publishEvent(new ConfigPushEvent(result));
 		});
+		return pushes;
 	}
 
 	/**
@@ -168,6 +187,18 @@ public class ConfigServiceImpl implements ConfigService, ApplicationEventPublish
 	}
 
 	/**
+	 * 获取推送记录
+	 *
+	 * @param configId
+	 * @param pageable
+	 * @return
+	 */
+	@Override
+	public Page<Push> getPushes(Integer configId, Pageable pageable) {
+		return this.pushRepository.getByConfig_Id(configId, pageable);
+	}
+
+	/**
 	 * 获取发布内容
 	 *
 	 * @param publishId
@@ -184,14 +215,24 @@ public class ConfigServiceImpl implements ConfigService, ApplicationEventPublish
 	 * @param rollbackOperation
 	 */
 	@Override
-	public void rollback(RollbackOperation rollbackOperation) {
-		this.publishManager.rollback(rollbackOperation);
+	public Publish rollback(RollbackOperation rollbackOperation) {
+		return this.publishManager.rollback(rollbackOperation);
 	}
 
 	@Override
-	public void init(Integer id, Map<String, Object> items) {
+	public List<Draft> loadItems(Integer id, Map<String, Object> items) {
 		Config config = this.configRepository.findById(id).get();
-		this.draftManager.overwrite(config, items);
+		return this.draftManager.overwrite(config, items);
+	}
+
+	@Override
+	public Config get(Integer id) {
+		return this.configRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Special config dose not exists"));
+	}
+
+	@Override
+	public List<Draft> getDrafts(Integer id) {
+		return this.draftRepository.findByConfig_Id(id);
 	}
 
 	@Override

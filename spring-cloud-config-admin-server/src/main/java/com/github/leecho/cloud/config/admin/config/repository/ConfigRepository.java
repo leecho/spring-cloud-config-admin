@@ -13,16 +13,18 @@ public interface ConfigRepository extends JpaRepository<Config, Integer> {
 
 	/**
 	 * 根据环境获取配置文件列表
+	 *
 	 * @param profileId
 	 * @return
 	 */
-	List<Config> getByProfile_Id(Integer profileId);
+	List<Config> findByProfile_Id(Integer profileId);
 
 	/**
 	 * 根据项目获取配置文件列表
+	 *
 	 * @param projectId
 	 * @return
 	 */
-	List<Config> getByProject_Id(Integer projectId);
+	List<Config> findByProject_Id(Integer projectId);
 
 }

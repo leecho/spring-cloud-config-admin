@@ -16,7 +16,9 @@ import javax.validation.constraints.NotNull;
  **/
 @Entity
 @Data
-@Table(name = "scca_config")
+@Table(name = "scca_config", uniqueConstraints = {
+		@UniqueConstraint(columnNames = {"project_id", "profile_id", "label"})
+})
 @ApiModel(description = "配置文件")
 public class Config {
 
@@ -54,10 +56,5 @@ public class Config {
 	 */
 	@ApiModelProperty("配置文件描述")
 	private String description;
-
-	/**
-	 * 是否已有更改
-	 */
-	private Boolean changed;
 
 }

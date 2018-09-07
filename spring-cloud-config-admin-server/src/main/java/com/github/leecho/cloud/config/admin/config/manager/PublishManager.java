@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.leecho.cloud.config.admin.config.entity.Change;
 import com.github.leecho.cloud.config.admin.config.entity.Config;
+import com.github.leecho.cloud.config.admin.config.entity.Draft;
 import com.github.leecho.cloud.config.admin.config.entity.Publish;
 import com.github.leecho.cloud.config.admin.config.model.DetectedChange;
 import com.github.leecho.cloud.config.admin.config.model.PublishOperation;
@@ -54,7 +55,7 @@ public class PublishManager {
 	 *
 	 * @param rollbackOperation
 	 */
-	public void rollback(RollbackOperation rollbackOperation) {
+	public Publish rollback(RollbackOperation rollbackOperation) {
 
 		Config config = this.configRepository.findById(rollbackOperation.getConfigId()).orElseThrow(() -> new IllegalArgumentException("Config not found"));
 
@@ -91,7 +92,7 @@ public class PublishManager {
 		publishOperation.setMessage(rollbackOperation.getMessage());
 
 		//发布新版本
-		this.publish(publishOperation);
+		return this.publish(publishOperation);
 	}
 
 	/**
@@ -99,7 +100,7 @@ public class PublishManager {
 	 *
 	 * @param publishOperation 发布操作
 	 */
-	public void publish(PublishOperation publishOperation) {
+	public Publish publish(PublishOperation publishOperation) {
 
 		String principal = SecurityContextHolder.getContext().getAuthentication().getName();
 
@@ -141,6 +142,8 @@ public class PublishManager {
 		}
 
 		log.info("Config [{}:{}:{}] publish successful, publish message: {}", config.getProject().getCode(), config.getProfile().getCode(), config.getLabel(), publish.getMessage());
+
+		return publish;
 	}
 
 	/**

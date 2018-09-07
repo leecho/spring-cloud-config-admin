@@ -25,8 +25,17 @@ public class Member {
 	@ManyToOne(targetEntity = Role.class)
 	private Role role;
 
-	@ManyToOne(targetEntity = Project.class)
-	private Project project;
+	/**
+	 * 所属对象实体ID
+	 */
+	@Column(nullable = false)
+	private Integer entityId;
+
+	/**
+	 * 所属对象实体类型
+	 */
+	@Column(nullable = false)
+	private String entityType;
 
 	/**
 	 * 关联用户

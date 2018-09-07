@@ -1,7 +1,6 @@
 package com.github.leecho.cloud.config.admin.config.service;
 
-import com.github.leecho.cloud.config.admin.config.entity.Change;
-import com.github.leecho.cloud.config.admin.config.entity.Config;
+import com.github.leecho.cloud.config.admin.config.entity.*;
 import com.github.leecho.cloud.config.admin.config.model.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,44 +37,50 @@ public interface ConfigService {
 	 */
 	Config update(Config config);
 
-	void commit(Change change);
+	List<Config> findByProfile(Integer profileId);
+
+	/**
+	 * 提交变更
+	 *
+	 * @param change
+	 */
+	Draft commit(Change change);
 
 	/**
 	 * 批量变更操作
 	 *
 	 * @param commitOperation 提交操作
 	 */
-	void commit(CommitOperation commitOperation);
+	List<Draft> commit(CommitOperation commitOperation);
 
 	/**
 	 * 还原配置文件
 	 *
 	 * @param id 配置文件ID
 	 */
-	void discard(Integer id);
+	List<Draft> discard(Integer id);
 
 
 	/**
 	 * 还原草稿中配置项
-	 *
-	 * @param configId 配置文件ID
+	 *  @param configId 配置文件ID
 	 * @param property 配置项
 	 */
-	void revert(Integer configId, String property);
+	Draft revert(Integer configId, String property);
 
 	/**
 	 * 发布配置文件
 	 *
 	 * @param publishOperation 推送操作
 	 */
-	void publish(PublishOperation publishOperation);
+	Publish publish(PublishOperation publishOperation);
 
 	/**
 	 * 推送配置文件
 	 *
 	 * @param pushOperation 推送请求
 	 */
-	void push(PushOperation pushOperation);
+	List<Push> push(PushOperation pushOperation);
 
 	/**
 	 * 根据提供的配置项与数据库中的数据进行对比，检测更改
@@ -112,6 +117,15 @@ public interface ConfigService {
 	Page<PublishVO> getPublishes(Integer configId, Pageable pageable);
 
 	/**
+	 * 获取推送记录
+	 *
+	 * @param configId 配置文件ID
+	 * @param pageable 分页配置
+	 * @return 推送记录列表
+	 */
+	Page<Push> getPushes(Integer configId, Pageable pageable);
+
+	/**
 	 * 根据发布记录ID获取发布的配置文件内容
 	 *
 	 * @param publishId 配置文件ID
@@ -124,7 +138,7 @@ public interface ConfigService {
 	 *
 	 * @param rollbackOperation 回滚请求
 	 */
-	void rollback(RollbackOperation rollbackOperation);
+	Publish rollback(RollbackOperation rollbackOperation);
 
 	/**
 	 * 初始化配置
@@ -132,5 +146,21 @@ public interface ConfigService {
 	 * @param id    配置文件ID
 	 * @param items 配置项
 	 */
-	void init(Integer id, Map<String, Object> items);
+	List<Draft> loadItems(Integer id, Map<String, Object> items);
+
+	/**
+	 * 获取配置文件信息
+	 *
+	 * @param id
+	 * @return 配置信息
+	 */
+	Config get(Integer id);
+
+	/**
+	 * 获取草稿内容
+	 *
+	 * @param id 配置文件ID
+	 * @return 草稿列表
+	 */
+	List<Draft> getDrafts(Integer id);
 }

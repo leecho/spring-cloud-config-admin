@@ -19,10 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
 import java.util.Map;
@@ -61,7 +59,6 @@ public class ConfigServiceImplTest {
 			Project project = new Project();
 			project.setName("测试项目");
 			project.setCode("test-service");
-			project.setOwner(0);
 			project.setDescription("test project");
 			project = projectService.save(project);
 
@@ -131,6 +128,6 @@ public class ConfigServiceImplTest {
 	public void init(Config config) {
 		InputStream inputStream = ConfigServiceImplTest.class.getClassLoader().getResourceAsStream("configuration-example.yml");
 		Map<String, Object> items = YamlUtils.convertYamlToMap(inputStream);
-		configService.init(config.getId(), items);
+		configService.loadItems(config.getId(), items);
 	}
 }

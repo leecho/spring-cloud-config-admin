@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * @author LIQIU
  * @date 2018-9-4
@@ -31,5 +33,15 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public void delete(Integer id) {
 		this.projectRepository.deleteById(id);
+	}
+
+	@Override
+	public Project get(Integer id) {
+		return this.projectRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Special profile dose not extis"));
+	}
+
+	@Override
+	public List<Project> list() {
+		return this.projectRepository.findAll();
 	}
 }

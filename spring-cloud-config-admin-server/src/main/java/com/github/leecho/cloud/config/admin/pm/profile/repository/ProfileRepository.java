@@ -13,16 +13,11 @@ import java.util.List;
  **/
 public interface ProfileRepository extends JpaRepository<Profile, Integer> {
 
+
 	/**
-	 * 获取授权的环境
+	 * 根据项目ID获取环境列表
 	 * @param projectId
-	 * @param userId
 	 * @return
 	 */
-	@Query("from Profile profile" +
-			"	left join Permission permission on permission.profile.id = profile.id" +
-			"	left join Member member1 on member1.role.id = permission.role.id" +
-			" where profile.project.id = :projectId and member1.user.id = :userId")
-	List<Profile> getAuthorizedProfiles(@Param("projectId") Integer projectId, @Param("userId") Integer userId);
-
+	List<Profile> findByProject_Id(Integer projectId);
 }

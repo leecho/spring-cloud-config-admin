@@ -43,7 +43,7 @@ public class DraftManager {
 	private ItemRepository itemRepository;
 
 
-	public void commit(Change change) {
+	public Draft commit(Change change) {
 
 		String principal = SecurityContextHolder.getContext().getAuthentication().getName();
 
@@ -57,16 +57,17 @@ public class DraftManager {
 
 		if (ChangeType.CREATE.getValue().equals(change.getType())) {
 
-			Assert.isNull(currentDraft, String.format("Duplicate property:%s", change.getProperty()));
+			Assert.isNull(currentDraft, String.format("Duplicate property: %s", change.getProperty()));
 
 			Draft draft = Draft.builder().config(config).property(change.getProperty()).value(change.getCurrentValue())
 					.originValue(change.getCurrentValue()).createdBy(principal).createdDate(new Date()).lastUpdateBy(principal).lastUpdateDate(new Date()).build();
 
-			this.draftRepository.save(draft);
+			currentDraft = this.draftRepository.save(draft);
 
 			log.info("Created config item [{}:{}], context:[application:{},profile:{},label:{}],message: {}",
 					change.getProperty(), change.getCurrentValue(), config.getProject().getCode(), config.getProfile().getCode(),
 					config.getLabel(), change.getMessage());
+
 		} else {
 
 			Assert.notNull(currentDraft, String.format("Special property: %s is not found", change.getProperty()));
@@ -95,6 +96,8 @@ public class DraftManager {
 		change.setChangeBy(principal);
 		change.setChangeDate(new Date());
 		changeRepository.save(change);
+
+		return currentDraft;
 	}
 
 	/**
@@ -103,7 +106,7 @@ public class DraftManager {
 	 * @param configId
 	 * @param property
 	 */
-	public void revert(Integer configId, String property) {
+	public Draft revert(Integer configId, String property) {
 
 		Draft draft = this.draftRepository.getByConfig_IdAndAndProperty(configId, property);
 		Assert.notNull(draft, "Special property:" + property + " is not found");
@@ -111,6 +114,7 @@ public class DraftManager {
 		draft.setValue(draft.getOriginValue());
 		this.draftRepository.save(draft);
 
+		return draft;
 	}
 
 	/**
@@ -118,7 +122,9 @@ public class DraftManager {
 	 *
 	 * @param configId
 	 */
-	public void discard(Integer configId) {
+	public List<Draft> discard(Integer configId) {
+
+		List<Draft> drafts = new ArrayList<>();
 
 		String principal = SecurityContextHolder.getContext().getAuthentication().getName();
 		Config config = configRepository.findById(configId).orElseThrow(() -> new IllegalArgumentException("Config not found"));
@@ -131,13 +137,16 @@ public class DraftManager {
 		items.forEach(item -> {
 			Draft draft = Draft.builder().config(config).originValue(item.getValue()).value(item.getValue()).property(item.getProperty())
 					.createdDate(new Date()).lastUpdateDate(new Date()).createdBy(principal).lastUpdateBy(principal).build();
-			this.draftRepository.save(draft);
+			draft = this.draftRepository.save(draft);
+			drafts.add(draft);
 		});
 
 		//删除未发布变更记录
 		this.changeRepository.deleteByConfig_IdAndPublished(configId, Boolean.FALSE);
 
 		log.info("Config [{}:{}:{}] draft discard successful", config.getProject().getCode(), config.getProfile().getCode(), config.getLabel());
+
+		return drafts;
 	}
 
 	/**
@@ -172,7 +181,10 @@ public class DraftManager {
 		return items;
 	}
 
-	public void commit(CommitOperation commitOperation) {
+	public List<Draft> commit(CommitOperation commitOperation) {
+
+
+		List<Draft> drafts = new ArrayList<>();
 
 		Config config = this.configRepository.findById(commitOperation.getConfigId()).orElseThrow(() -> new IllegalArgumentException("Config is not found"));
 
@@ -188,8 +200,10 @@ public class DraftManager {
 			change.setProperty(commitChange.getProperty());
 			change.setMessage(commitOperation.getMessage());
 			change.setCurrentValue(commitChange.getValue());
-			this.commit(change);
+			Draft draft = this.commit(change);
+			drafts.add(draft);
 		});
+		return drafts;
 	}
 
 	/**
@@ -244,16 +258,35 @@ public class DraftManager {
 	 * @param config
 	 * @param items
 	 */
-	public void overwrite(Config config, Map<String, Object> items) {
+	public List<Draft> overwrite(Config config, Map<String, Object> items) {
 
 		this.draftRepository.deleteByConfig_Id(config.getId());
 
 		String principal = SecurityContextHolder.getContext().getAuthentication().getName();
 
+		List<Draft> drafts = draftRepository.findByConfig_Id(config.getId());
+		List<Draft> result = new ArrayList<>();
+		drafts.forEach(draft -> {
+			//进行比对，存在的则更新
+			Object value = items.get(draft.getProperty());
+			if (value != null) {
+				draft.setValue(String.valueOf(value));
+				this.draftRepository.save(draft);
+				items.remove(draft.getProperty());
+				result.add(draft);
+			} else {
+				//不能存在的则删除
+				this.draftRepository.delete(draft);
+			}
+		});
+
 		items.forEach((key, value) -> {
 			Draft draft = Draft.builder().config(config).property(key).value(String.valueOf(value)).originValue(String.valueOf(value))
 					.createdDate(new Date()).createdBy(principal).lastUpdateDate(new Date()).lastUpdateBy(principal).build();
 			this.draftRepository.save(draft);
+			result.add(draft);
 		});
+
+		return result;
 	}
 }

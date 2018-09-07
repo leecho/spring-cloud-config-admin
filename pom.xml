@@ -10,7 +10,6 @@
         <module>spring-cloud-config-admin-sample</module>
         <module>spring-cloud-config-admin-server</module>
         <module>spring-cloud-config-admin-ui</module>
-        <module>spring-cloud-config-admin-ldap</module>
         <module>spring-cloud-config-admin-starter-server</module>
     </modules>
     <packaging>pom</packaging>

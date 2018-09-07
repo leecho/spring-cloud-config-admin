@@ -23,6 +23,11 @@ spring:
         serviceId: config
       admin:
         context-path: /admin
+  security:
+    user:
+      name: admin
+      password: 1234
+      roles: 1-MAINTAINER,1-
 eureka:
   client:
     serviceUrl:

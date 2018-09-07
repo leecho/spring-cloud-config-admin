@@ -2,6 +2,8 @@ package com.github.leecho.cloud.config.admin.pm.project.service;
 
 import com.github.leecho.cloud.config.admin.pm.project.entity.Project;
 
+import java.util.List;
+
 /**
  * @author LIQIU
  * @date 2018-9-4
@@ -25,4 +27,8 @@ public interface ProjectService {
 	 * @param id
 	 */
 	void delete(Integer id);
+
+	Project get(Integer id);
+
+	List<Project> list();
 }
