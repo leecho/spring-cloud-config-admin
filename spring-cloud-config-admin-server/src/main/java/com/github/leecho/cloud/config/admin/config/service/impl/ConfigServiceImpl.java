@@ -2,6 +2,7 @@ package com.github.leecho.cloud.config.admin.config.service.impl;
 
 import com.github.leecho.cloud.config.admin.config.entity.Change;
 import com.github.leecho.cloud.config.admin.config.entity.Config;
+import com.github.leecho.cloud.config.admin.config.entity.Push;
 import com.github.leecho.cloud.config.admin.config.event.ConfigPublishEvent;
 import com.github.leecho.cloud.config.admin.config.event.ConfigPushEvent;
 import com.github.leecho.cloud.config.admin.config.manager.DraftManager;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -96,9 +98,16 @@ public class ConfigServiceImpl implements ConfigService, ApplicationEventPublish
 
 	@Override
 	public void push(PushOperation pushOperation) {
+		Config config = this.configRepository.findById(pushOperation.getConfigId()).orElseThrow(() ->
+				new IllegalArgumentException("Special config dose not exists"));
+
+		if (CollectionUtils.isEmpty(pushOperation.getDestinations())) {
+			pushOperation.getDestinations().add("**");
+		}
+
 		pushOperation.getDestinations().forEach(destination -> {
-			pushManager.push(destination);
-			this.applicationEventPublisher.publishEvent(new ConfigPushEvent(destination));
+			Push result = pushManager.push(config, destination);
+			this.applicationEventPublisher.publishEvent(new ConfigPushEvent(result));
 		});
 	}
 

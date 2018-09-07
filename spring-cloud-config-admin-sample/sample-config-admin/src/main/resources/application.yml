@@ -17,7 +17,12 @@ spring:
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
   application:
     name: config-admin
-
+  cloud:
+    config:
+      server:
+        serviceId: config
+      admin:
+        context-path: /admin
 eureka:
   client:
     serviceUrl:

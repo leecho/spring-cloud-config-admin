@@ -15,12 +15,12 @@ import org.springframework.web.client.RestTemplate;
 @ComponentScan("com.github.leecho.cloud.config.admin")
 @EntityScan("com.github.leecho.cloud.config.admin")
 @EnableJpaRepositories(basePackages = "com.github.leecho.cloud.config.admin")
-@EnableConfigurationProperties(ConfigServerProperties.class)
-public class ConfigAdminServerAutoConfiguration {
+@EnableConfigurationProperties({ConfigServerProperties.class, ConfigAdminServerConfiguration.class})
+public class ConfigAdminServerConfiguration {
 
 	@LoadBalanced
 	@Bean
-	public RestTemplate cloudClientRestTemplate() {
+	public RestTemplate configAdminRestTemplate() {
 		return new RestTemplate();
 	}
 

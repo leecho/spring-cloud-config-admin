@@ -8,7 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @date 2018-9-6
  **/
 @Data
-@ConfigurationProperties("spring.cloud.config")
+@ConfigurationProperties("spring.cloud.config.server")
 public class ConfigServerProperties {
 
 	private String url;

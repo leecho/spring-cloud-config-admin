@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>spring-cloud-config-admin</artifactId>
+        <groupId>com.github.leecho</groupId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>spring-cloud-config-admin-starter-server</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.github.leecho</groupId>
+            <artifactId>spring-cloud-config-admin-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.leecho</groupId>
+            <artifactId>spring-cloud-config-admin-ui</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

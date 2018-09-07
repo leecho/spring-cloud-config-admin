@@ -3,7 +3,7 @@ spring:
     config:
       server:
         jdbc:
-          sql: SELECT PROPERTY, VALUE from SCCA_ITEM where APPLICATION=? and PROFILE=? and LABEL=?
+          sql: SELECT PROPERTY, VALUE from SCCA_CONFIG_ITEM where APPLICATION=? and PROFILE=? and LABEL=?
   profiles:
      active: jdbc
   application:

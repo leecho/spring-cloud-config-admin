@@ -1,6 +1,6 @@
 package com.github.leecho.cloud.config.admin.config.service.impl;
 
-import com.github.leecho.cloud.config.admin.ConfigAdminTestConfiguration;
+import com.github.leecho.cloud.config.admin.ServiceTestConfiguration;
 import com.github.leecho.cloud.config.admin.config.entity.Change;
 import com.github.leecho.cloud.config.admin.config.entity.Config;
 import com.github.leecho.cloud.config.admin.config.enums.ChangeType;
@@ -32,10 +32,8 @@ import java.util.Map;
  * @date 2018-9-4
  **/
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = ConfigAdminTestConfiguration.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@SpringBootTest(classes = ServiceTestConfiguration.class, webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @ActiveProfiles("test")
-@Rollback
-@Transactional
 public class ConfigServiceImplTest {
 
 	@Autowired

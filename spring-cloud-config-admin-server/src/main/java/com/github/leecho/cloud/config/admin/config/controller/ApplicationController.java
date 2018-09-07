@@ -1,5 +1,6 @@
 package com.github.leecho.cloud.config.admin.config.controller;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,8 @@ import java.util.List;
  * @author LIQIU
  * @date 2018-9-6
  **/
-@RestController("应用服务接口")
+@Api(tags = "应用服务接口")
+@RestController
 @RequestMapping(value = "/application", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ApplicationController {
 
