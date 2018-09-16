@@ -24,31 +24,31 @@ public class ProjectController {
 	private ProjectService projectService;
 
 	@PostMapping("/project")
-	@ApiOperation("保存环境信息")
+	@ApiOperation("保存项目信息")
 	public ResponseEntity<Project> save(@Validated @RequestBody @ApiParam(value = "项目信息", required = true) Project project) {
 		return ResponseEntity.ok(projectService.save(project));
 	}
 
 	@PutMapping("/project")
-	@ApiOperation(value = "修改环境信息")
+	@ApiOperation(value = "修改项目信息")
 	public ResponseEntity<Project> update(@Validated @RequestBody @ApiParam(value = "项目信息", required = true) Project project) {
 		return ResponseEntity.ok(projectService.update(project));
 	}
 
 	@DeleteMapping(value = "/project/{id}")
-	@ApiOperation(("删除环境"))
-	public void delete(@PathVariable @ApiParam(name = "环境ID", required = true) Integer id) {
+	@ApiOperation(("删除项目"))
+	public void delete(@PathVariable @ApiParam(name = "项目ID", required = true) Integer id) {
 		projectService.delete(id);
 	}
 
 	@GetMapping(value = "/project/{id}")
-	@ApiOperation("获取环境信息")
-	public ResponseEntity<Project> get(@PathVariable("id") @ApiParam(value = "环境ID", required = true) Integer id) {
+	@ApiOperation("获取项目信息")
+	public ResponseEntity<Project> get(@PathVariable("id") @ApiParam(value = "项目ID", required = true) Integer id) {
 		return ResponseEntity.ok(this.projectService.get(id));
 	}
 
 	@GetMapping(value = "/projects")
-	@ApiOperation("获取环境列表")
+	@ApiOperation("获取项目列表")
 	public ResponseEntity<List<Project>> list() {
 		return ResponseEntity.ok(this.projectService.list());
 	}

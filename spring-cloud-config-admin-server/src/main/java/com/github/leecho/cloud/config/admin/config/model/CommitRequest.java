@@ -16,7 +16,7 @@ import java.util.List;
  **/
 @Data
 @ApiModel(description = "提交操作")
-public class CommitOperation {
+public class CommitRequest {
 
 	@ApiModelProperty(value = "配置文件ID", required = true)
 	@NotNull(message = "配置文件ID不能为空")

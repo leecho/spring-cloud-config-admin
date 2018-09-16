@@ -4,7 +4,7 @@ import com.github.leecho.cloud.config.admin.ServiceTestConfiguration;
 import com.github.leecho.cloud.config.admin.config.entity.Change;
 import com.github.leecho.cloud.config.admin.config.entity.Config;
 import com.github.leecho.cloud.config.admin.config.enums.ChangeType;
-import com.github.leecho.cloud.config.admin.config.model.PublishOperation;
+import com.github.leecho.cloud.config.admin.config.model.PublishRequest;
 import com.github.leecho.cloud.config.admin.config.repository.ConfigRepository;
 import com.github.leecho.cloud.config.admin.config.service.ConfigService;
 import com.github.leecho.cloud.config.admin.pm.profile.entity.Profile;
@@ -118,10 +118,10 @@ public class ConfigServiceImplTest {
 	@Test
 	public void publish() {
 		this.commit();
-		PublishOperation publishOperation = new PublishOperation();
-		publishOperation.setConfigId(config.getId());
-		publishOperation.setMessage("版本发布");
-		this.configService.publish(publishOperation);
+		PublishRequest publishRequest = new PublishRequest();
+		publishRequest.setConfigId(config.getId());
+		publishRequest.setMessage("版本发布");
+		this.configService.publish(publishRequest);
 		//this.configService.publish(config.getId());
 	}
 

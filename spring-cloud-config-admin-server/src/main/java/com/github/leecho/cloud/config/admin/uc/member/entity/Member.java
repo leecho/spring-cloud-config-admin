@@ -1,6 +1,5 @@
-package com.github.leecho.cloud.config.admin.uc.member;
+package com.github.leecho.cloud.config.admin.uc.member.entity;
 
-import com.github.leecho.cloud.config.admin.pm.project.entity.Project;
 import com.github.leecho.cloud.config.admin.uc.user.entity.User;
 import com.github.leecho.cloud.config.admin.upm.role.Role;
 import lombok.Data;

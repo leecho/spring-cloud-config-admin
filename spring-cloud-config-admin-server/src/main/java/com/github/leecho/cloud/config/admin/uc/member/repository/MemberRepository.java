@@ -1,6 +1,6 @@
-package com.github.leecho.cloud.config.admin.uc.user.repository;
+package com.github.leecho.cloud.config.admin.uc.member.repository;
 
-import com.github.leecho.cloud.config.admin.uc.member.Member;
+import com.github.leecho.cloud.config.admin.uc.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

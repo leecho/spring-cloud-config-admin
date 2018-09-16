@@ -10,7 +10,7 @@ import lombok.Data;
  **/
 @Data
 @ApiModel(description = "检测变更操作")
-public class DetectOperation {
+public class DetectRequest {
 
 	@ApiModelProperty(name = "配置文件ID", required = true)
 	private Integer configId;

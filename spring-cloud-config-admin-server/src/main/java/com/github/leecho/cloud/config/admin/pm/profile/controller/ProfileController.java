@@ -37,8 +37,9 @@ public class ProfileController {
 
 	@DeleteMapping(value = "/profile/{id}")
 	@ApiOperation(("删除环境"))
-	public void delete(@PathVariable @ApiParam(name = "环境ID", required = true) Integer id) {
+	public ResponseEntity<String> delete(@PathVariable @ApiParam(name = "环境ID", required = true) Integer id) {
 		profileService.delete(id);
+		return ResponseEntity.ok("");
 	}
 
 	@GetMapping(value = "/profile/{id}")

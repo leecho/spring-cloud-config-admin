@@ -43,8 +43,6 @@ public class Swagger2Configuration {
 	@Bean
 	UiConfiguration uiConfig() {
 		return UiConfigurationBuilder.builder().docExpansion(DocExpansion.NONE).defaultModelRendering(ModelRendering.EXAMPLE).tagsSorter(TagsSorter.ALPHA).build();
-		/*return new UiConfiguration(null, "list", "alpha", "schema",
-				UiConfiguration.Constants.DEFAULT_SUBMIT_METHODS, false, true, 60000L);*/
 	}
 
 }

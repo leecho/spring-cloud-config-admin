@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
  **/
 @Data
 @ApiModel(description = "发布配置操作")
-public class PublishOperation {
+public class PublishRequest {
 
 	@NotNull(message = "配置文件ID不能为空")
 	@ApiModelProperty(value = "配置文件ID", required = true)

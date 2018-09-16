@@ -4,12 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.leecho.cloud.config.admin.config.entity.Change;
 import com.github.leecho.cloud.config.admin.config.entity.Config;
-import com.github.leecho.cloud.config.admin.config.entity.Draft;
 import com.github.leecho.cloud.config.admin.config.entity.Publish;
 import com.github.leecho.cloud.config.admin.config.model.DetectedChange;
-import com.github.leecho.cloud.config.admin.config.model.PublishOperation;
+import com.github.leecho.cloud.config.admin.config.model.PublishRequest;
 import com.github.leecho.cloud.config.admin.config.model.PublishVO;
-import com.github.leecho.cloud.config.admin.config.model.RollbackOperation;
+import com.github.leecho.cloud.config.admin.config.model.RollbackRequest;
 import com.github.leecho.cloud.config.admin.config.repository.ChangeRepository;
 import com.github.leecho.cloud.config.admin.config.repository.ConfigRepository;
 import com.github.leecho.cloud.config.admin.config.repository.PublishRepository;
@@ -53,19 +52,19 @@ public class PublishManager {
 	/**
 	 * 回滚配置文件
 	 *
-	 * @param rollbackOperation
+	 * @param rollbackRequest
 	 */
-	public Publish rollback(RollbackOperation rollbackOperation) {
+	public Publish rollback(RollbackRequest rollbackRequest) {
 
-		Config config = this.configRepository.findById(rollbackOperation.getConfigId()).orElseThrow(() -> new IllegalArgumentException("Config not found"));
+		Config config = this.configRepository.findById(rollbackRequest.getConfigId()).orElseThrow(() -> new IllegalArgumentException("Config not found"));
 
 		Publish publish;
 
 		//获取已发布的版本
-		if (rollbackOperation.getPublishId() != null) {
-			publish = publishRepository.findById(rollbackOperation.getPublishId()).orElseThrow(() -> new IllegalArgumentException("Publish not found"));
+		if (rollbackRequest.getPublishId() != null) {
+			publish = publishRepository.findById(rollbackRequest.getPublishId()).orElseThrow(() -> new IllegalArgumentException("Publish not found"));
 		} else {
-			publish = this.publishRepository.getByConfig_IdAndCurrent(rollbackOperation.getConfigId(), true);
+			publish = this.publishRepository.getByConfig_IdAndCurrent(rollbackRequest.getConfigId(), true);
 		}
 
 		Assert.notNull(publish, "Publish for rollback not found");
@@ -83,28 +82,28 @@ public class PublishManager {
 			Change change = new Change();
 			BeanUtils.copyProperties(detectedChange, change);
 			change.setConfig(config);
-			change.setMessage(rollbackOperation.getMessage());
+			change.setMessage(rollbackRequest.getMessage());
 			this.draftManager.commit(change);
 		});
 
-		PublishOperation publishOperation = new PublishOperation();
-		publishOperation.setConfigId(config.getId());
-		publishOperation.setMessage(rollbackOperation.getMessage());
+		PublishRequest publishRequest = new PublishRequest();
+		publishRequest.setConfigId(config.getId());
+		publishRequest.setMessage(rollbackRequest.getMessage());
 
 		//发布新版本
-		return this.publish(publishOperation);
+		return this.publish(publishRequest);
 	}
 
 	/**
 	 * 对配置进行归档
 	 *
-	 * @param publishOperation 发布操作
+	 * @param publishRequest 发布操作
 	 */
-	public Publish publish(PublishOperation publishOperation) {
+	public Publish publish(PublishRequest publishRequest) {
 
 		String principal = SecurityContextHolder.getContext().getAuthentication().getName();
 
-		Config config = this.configRepository.findById(publishOperation.getConfigId()).orElseThrow(() -> new IllegalArgumentException("Special config is not found"));
+		Config config = this.configRepository.findById(publishRequest.getConfigId()).orElseThrow(() -> new IllegalArgumentException("Special config is not found"));
 
 		//应用草稿
 		Map<String, String> items = this.draftManager.apply(config);
@@ -131,7 +130,7 @@ public class PublishManager {
 			publish.setVersion(0);
 		}
 		publish.setCurrent(true);
-		publish.setMessage(publishOperation.getMessage());
+		publish.setMessage(publishRequest.getMessage());
 		publish = this.publishRepository.save(publish);
 
 		List<Change> changes = changeRepository.getByConfig_IdAndPublished(config.getId(), false);

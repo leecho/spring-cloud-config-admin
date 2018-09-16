@@ -5,7 +5,7 @@ import com.github.leecho.cloud.config.admin.config.entity.Config;
 import com.github.leecho.cloud.config.admin.config.entity.Draft;
 import com.github.leecho.cloud.config.admin.config.entity.Item;
 import com.github.leecho.cloud.config.admin.config.enums.ChangeType;
-import com.github.leecho.cloud.config.admin.config.model.CommitOperation;
+import com.github.leecho.cloud.config.admin.config.model.CommitRequest;
 import com.github.leecho.cloud.config.admin.config.model.DetectedChange;
 import com.github.leecho.cloud.config.admin.config.repository.ChangeRepository;
 import com.github.leecho.cloud.config.admin.config.repository.ConfigRepository;
@@ -181,14 +181,14 @@ public class DraftManager {
 		return items;
 	}
 
-	public List<Draft> commit(CommitOperation commitOperation) {
+	public List<Draft> commit(CommitRequest commitRequest) {
 
 
 		List<Draft> drafts = new ArrayList<>();
 
-		Config config = this.configRepository.findById(commitOperation.getConfigId()).orElseThrow(() -> new IllegalArgumentException("Config is not found"));
+		Config config = this.configRepository.findById(commitRequest.getConfigId()).orElseThrow(() -> new IllegalArgumentException("Config is not found"));
 
-		commitOperation.getChanges().forEach(commitChange -> {
+		commitRequest.getChanges().forEach(commitChange -> {
 
 			ChangeType changeType = ChangeType.getByName(commitChange.getType());
 
@@ -198,7 +198,7 @@ public class DraftManager {
 			change.setConfig(config);
 			change.setType(changeType.getValue());
 			change.setProperty(commitChange.getProperty());
-			change.setMessage(commitOperation.getMessage());
+			change.setMessage(commitRequest.getMessage());
 			change.setCurrentValue(commitChange.getValue());
 			Draft draft = this.commit(change);
 			drafts.add(draft);

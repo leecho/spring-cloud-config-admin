@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
  **/
 @Data
 @ApiModel(description = "回滚配置操作")
-public class RollbackOperation {
+public class RollbackRequest {
 
 	@NotNull(message = "配置文件不能为空")
 	@ApiModelProperty(value = "配置文件", required = true)

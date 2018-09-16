@@ -49,9 +49,9 @@ public interface ConfigService {
 	/**
 	 * 批量变更操作
 	 *
-	 * @param commitOperation 提交操作
+	 * @param commitRequest 提交操作
 	 */
-	List<Draft> commit(CommitOperation commitOperation);
+	List<Draft> commit(CommitRequest commitRequest);
 
 	/**
 	 * 还原配置文件
@@ -71,16 +71,16 @@ public interface ConfigService {
 	/**
 	 * 发布配置文件
 	 *
-	 * @param publishOperation 推送操作
+	 * @param publishRequest 推送操作
 	 */
-	Publish publish(PublishOperation publishOperation);
+	Publish publish(PublishRequest publishRequest);
 
 	/**
 	 * 推送配置文件
 	 *
 	 * @param pushOperation 推送请求
 	 */
-	List<Push> push(PushOperation pushOperation);
+	List<Push> push(PushRequest pushOperation);
 
 	/**
 	 * 根据提供的配置项与数据库中的数据进行对比，检测更改
@@ -136,9 +136,9 @@ public interface ConfigService {
 	/**
 	 * 回滚配置文件
 	 *
-	 * @param rollbackOperation 回滚请求
+	 * @param rollbackRequest 回滚请求
 	 */
-	Publish rollback(RollbackOperation rollbackOperation);
+	Publish rollback(RollbackRequest rollbackRequest);
 
 	/**
 	 * 初始化配置

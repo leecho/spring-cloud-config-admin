@@ -87,8 +87,8 @@ public class ConfigServiceImpl implements ConfigService, ApplicationEventPublish
 	}
 
 	@Override
-	public List<Draft> commit(CommitOperation commitOperation) {
-		return this.draftManager.commit(commitOperation);
+	public List<Draft> commit(CommitRequest commitRequest) {
+		return this.draftManager.commit(commitRequest);
 	}
 
 	@Override
@@ -102,18 +102,18 @@ public class ConfigServiceImpl implements ConfigService, ApplicationEventPublish
 	}
 
 	@Override
-	public Publish publish(PublishOperation publishOperation) {
+	public Publish publish(PublishRequest publishRequest) {
 
-		Publish publish = this.publishManager.publish(publishOperation);
+		Publish publish = this.publishManager.publish(publishRequest);
 
 		//更改配置文件状态为无修改
-		this.applicationEventPublisher.publishEvent(new ConfigPublishEvent(publishOperation));
+		this.applicationEventPublisher.publishEvent(new ConfigPublishEvent(publishRequest));
 
 		return publish;
 	}
 
 	@Override
-	public List<Push> push(PushOperation pushOperation) {
+	public List<Push> push(PushRequest pushOperation) {
 		List<Push> pushes = new ArrayList<>();
 		Config config = this.configRepository.findById(pushOperation.getConfigId()).orElseThrow(() ->
 				new IllegalArgumentException("Special config dose not exists"));
@@ -212,11 +212,11 @@ public class ConfigServiceImpl implements ConfigService, ApplicationEventPublish
 	/**
 	 * 回滚配置文件
 	 *
-	 * @param rollbackOperation
+	 * @param rollbackRequest
 	 */
 	@Override
-	public Publish rollback(RollbackOperation rollbackOperation) {
-		return this.publishManager.rollback(rollbackOperation);
+	public Publish rollback(RollbackRequest rollbackRequest) {
+		return this.publishManager.rollback(rollbackRequest);
 	}
 
 	@Override

@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,6 +52,7 @@ public class ConfigController {
 
 	@PostMapping
 	@ApiOperation("保存配置文件信息")
+	@PreAuthorize("hasPermission(#config,'save')")
 	public ResponseEntity<Config> save(@Validated @RequestBody @ApiParam(value = "配置文件信息", required = true) Config config) {
 		return ResponseEntity.ok(configService.save(config));
 	}
@@ -89,15 +91,15 @@ public class ConfigController {
 	@PostMapping(value = "/publish")
 	@ApiOperation("发布配置")
 	public ResponseEntity<Publish> publish(@RequestBody @Validated @ApiParam(value = "发布配置", required = true)
-												   PublishOperation publishOperation) {
-		return ResponseEntity.ok(this.configService.publish(publishOperation));
+												   PublishRequest publishRequest) {
+		return ResponseEntity.ok(this.configService.publish(publishRequest));
 	}
 
 	@PostMapping(value = "/rollback")
 	@ApiOperation("回滚配置")
 	public ResponseEntity<Publish> rollback(@RequestBody @Validated @ApiParam(value = "回滚配置", required = true)
-													RollbackOperation rollbackOperation) {
-		return ResponseEntity.ok(this.configService.rollback(rollbackOperation));
+													RollbackRequest rollbackRequest) {
+		return ResponseEntity.ok(this.configService.rollback(rollbackRequest));
 	}
 
 
@@ -111,7 +113,7 @@ public class ConfigController {
 	@ApiOperation("推送配置")
 	@PostMapping(value = "/push")
 	public ResponseEntity<List<Push>> push(@RequestBody @Validated @ApiParam(value = "推送配置操作", required = true)
-												   PushOperation pushOperation) {
+												   PushRequest pushOperation) {
 		return ResponseEntity.ok(this.configService.push(pushOperation));
 	}
 
@@ -124,10 +126,10 @@ public class ConfigController {
 
 
 	@ApiOperation(value = "提交变更")
-	@PutMapping(value = "/commit")
+	@PostMapping(value = "/commit")
 	public ResponseEntity<List<Draft>> commit(@RequestBody @Validated @ApiParam(value = "提交变更操作", required = true)
-													  CommitOperation commitOperation) {
-		return ResponseEntity.ok(this.configService.commit(commitOperation));
+													  CommitRequest commitRequest) {
+		return ResponseEntity.ok(this.configService.commit(commitRequest));
 	}
 
 
@@ -172,22 +174,22 @@ public class ConfigController {
 	@PutMapping("/detect")
 	@ApiOperation(value = "根据内容获取变更")
 	public ResponseEntity<?> detect(@RequestBody @Validated @ApiParam(value = "检测变更操作", required = true)
-											DetectOperation detectOperation) {
+											DetectRequest detectRequest) {
 		Map<String, Object> data;
 
-		if (!configFormats.contains(detectOperation.getFormat())) {
+		if (!configFormats.contains(detectRequest.getFormat())) {
 			return ResponseEntity.badRequest().body("配置文件格式非法");
 		}
 
 		try {
-			if (YAML_FORMAT.equals(detectOperation.getFormat())) {
-				data = YamlUtils.convertYamlToMap(detectOperation.getContent());
+			if (YAML_FORMAT.equals(detectRequest.getFormat())) {
+				data = YamlUtils.convertYamlToMap(detectRequest.getContent());
 			} else {
-				data = PropertiesUtils.conventPropertiesToMap(detectOperation.getContent());
+				data = PropertiesUtils.conventPropertiesToMap(detectRequest.getContent());
 			}
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body("读取配置文件内容发生错误");
 		}
-		return ResponseEntity.ok(this.configService.detect(detectOperation.getConfigId(), data));
+		return ResponseEntity.ok(this.configService.detect(detectRequest.getConfigId(), data));
 	}
 }

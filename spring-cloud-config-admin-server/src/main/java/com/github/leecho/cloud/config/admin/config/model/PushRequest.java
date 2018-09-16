@@ -14,7 +14,7 @@ import java.util.List;
  **/
 @Data
 @ApiModel(description = "推送配置操作")
-public class PushOperation {
+public class PushRequest {
 
 	@ApiModelProperty("配置文件ID")
 	@NotNull(message = "配置文件不能为空")

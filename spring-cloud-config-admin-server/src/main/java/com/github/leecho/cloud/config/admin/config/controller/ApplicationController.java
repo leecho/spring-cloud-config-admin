@@ -30,7 +30,7 @@ public class ApplicationController {
 
 	@PostMapping(value = "/getInstances/{application}")
 	@ApiOperation("获取应用实例列表")
-	public ResponseEntity<List<ServiceInstance>> getApplicationInstances(@PathVariable(required = true) @ApiParam(value = "配置文件ID", required = true) String application) {
+	public ResponseEntity<List<ServiceInstance>> getApplicationInstances(@PathVariable(required = true) @ApiParam(value = "应用名称", required = true) String application) {
 		return ResponseEntity.ok(this.discoveryClient.getInstances(application.toUpperCase()));
 	}
 
